@@ -1,0 +1,20 @@
+{
+  "name": "gulp-project",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "djvang <djvang92@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/djvang/gulp-spalah",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "normalize-css": "normalize.css#^6.0.0"
+  }
+}
