@@ -1,2 +1,3 @@
-node_modules
+# Folders to ignore
 bower_components
+node_modules
