@@ -1,5 +1,5 @@
 {
-  "name": "gulp-project",
+  "name": "markupus-gulp",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "dev": "gulp dev",
     "build": "NODE_ENV=production gulp build"
   },
-  "author": "",
+  "author": "https://github.com/djvang",
   "license": "ISC",
   "devDependencies": {
     "browser-sync": "^2.18.8",
