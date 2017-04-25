@@ -1,27 +1,33 @@
 var gulp            = require('gulp');
 var sass            = require('gulp-sass');
 var less            = require('gulp-less');
-var path            = require('path');
-var browserSync     = require('browser-sync').create();
 var watch           = require('gulp-watch');
-var clean           = require('gulp-clean');
-var runSequence     = require('run-sequence');
-var zip             = require('gulp-zip');
 var sourcemaps      = require('gulp-sourcemaps');
 var autoprefixer    = require('gulp-autoprefixer');
-var include         = require("gulp-include");
+var clean           = require('gulp-clean');
 var handlebars      = require('gulp-compile-handlebars');
 var rename          = require('gulp-rename');
+var include         = require("gulp-include");
+var plumber         = require('gulp-plumber');
+var notify          = require('gulp-notify');
+var gulpif          = require('gulp-if');
+var zip             = require('gulp-zip');
+
+var path            = require('path');
+var browserSync     = require('browser-sync').create();
+var runSequence     = require('run-sequence');
 
 var paths = {
   src:        './src',
-  dest:       './dest',
+  dest:       './dist',
   scss:       '/scss',
   less:       '/less',
   js:         '/js',
   images:     '/images',
   components: '/components'
-}
+};
+
+var isDebug = process.env.NODE_ENV !== 'production';
 
 gulp.task('html', function () {
   options = {
@@ -34,6 +40,9 @@ gulp.task('html', function () {
     }
   }
   return gulp.src(paths.src + '/*.{html,hbs,handlebars}')
+    .pipe(plumber({
+        errorHandler: notify.onError("Error: <%= error.message %>")
+    }))
     .pipe(handlebars({}, options))
     .pipe(rename(function (path) {
       path.extname = ".html"
@@ -44,7 +53,10 @@ gulp.task('html', function () {
 
 gulp.task('scss', function() {
     return gulp.src(paths.src + paths.scss + '/**/*.{scss,sass}')
-        .pipe(sourcemaps.init())
+        .pipe(plumber({
+            errorHandler: notify.onError("Error: <%= error.message %>")
+        }))
+        .pipe(gulpif(isDebug, sourcemaps.init()))
         .pipe(autoprefixer())
         .pipe(sass({
             includePaths: [
@@ -52,14 +64,17 @@ gulp.task('scss', function() {
                 __dirname + "/node_modules"
             ]
         }).on('error', sass.logError))
+        .pipe(gulpif(isDebug, sourcemaps.write()))
         .pipe(gulp.dest(paths.dest + '/css'))
-        .pipe(sourcemaps.write())
         .pipe(browserSync.stream());
 });
 
 gulp.task('less', function() {
     return gulp.src(paths.src + paths.less + '/**/*.less')
-        .pipe(sourcemaps.init())
+        .pipe(plumber({
+            errorHandler: notify.onError("Error: <%= error.message %>")
+        }))
+        .pipe(gulpif(isDebug, sourcemaps.init()))
         .pipe(autoprefixer())
         .pipe(less({
             paths: [
@@ -68,13 +83,16 @@ gulp.task('less', function() {
                 __dirname + "/node_modules"
             ]
         }))
-        .pipe(sourcemaps.write())
+        .pipe(gulpif(isDebug, sourcemaps.write()))
         .pipe(gulp.dest(paths.dest + '/css'))
         .pipe(browserSync.stream());
 });
 
 gulp.task('js', function() {
     return gulp.src(paths.src + paths.js + '/main.js')
+        .pipe(plumber({
+            errorHandler: notify.onError("Error: <%= error.message %>")
+        }))
         .pipe(include({
           includePaths: [
             __dirname + "/bower_components",
@@ -100,7 +118,7 @@ gulp.task('images', function() {
 gulp.task('zip', function() {
     gulp.src(paths.dest + '/**/*.*')
         .pipe(zip(path.basename(__dirname) + '.zip'))
-        .pipe(gulp.dest('./'))
+        .pipe(gulp.dest(paths.dest))
 });
 
 gulp.task('clean', function() {

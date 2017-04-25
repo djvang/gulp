@@ -14,7 +14,5 @@
     "test",
     "tests"
   ],
-  "dependencies": {
-    "normalize-css": "normalize.css#^6.0.0"
-  }
+  "dependencies": {}
 }
