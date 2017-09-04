@@ -147,7 +147,7 @@ gulp.task('watch', function() {
     });
 });
 
-gulp.task('dev', ['scss', 'less', 'html', 'js', 'js:vendor', 'images'], function() {
+gulp.task('dev-oleg', ['scss', 'less', 'html', 'js', 'js:vendor', 'images'], function() {
     browserSync.init({
         server: paths.dest
     });
