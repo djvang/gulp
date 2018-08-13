@@ -12,7 +12,6 @@ var plumber         = require('gulp-plumber');
 var notify          = require('gulp-notify');
 var gulpif          = require('gulp-if');
 var zip             = require('gulp-zip');
-var data            = require('gulp-data');
 
 var path            = require('path');
 var browserSync     = require('browser-sync').create();
@@ -43,9 +42,6 @@ gulp.task('html', function () {
   return gulp.src(paths.src + '/*.{html,hbs,handlebars}')
     .pipe(plumber({
         errorHandler: notify.onError("Error: <%= error.message %>")
-    }))
-    .pipe(data(function() {
-        return require('./src/data/data.json')
     }))
     .pipe(handlebars({}, options))
     .pipe(rename(function (path) {
