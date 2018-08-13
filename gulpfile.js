@@ -12,6 +12,7 @@ var plumber         = require('gulp-plumber');
 var notify          = require('gulp-notify');
 var gulpif          = require('gulp-if');
 var zip             = require('gulp-zip');
+var data            = require('gulp-data');
 
 var path            = require('path');
 var browserSync     = require('browser-sync').create();
@@ -43,6 +44,9 @@ gulp.task('html', function () {
     .pipe(plumber({
         errorHandler: notify.onError("Error: <%= error.message %>")
     }))
+    .pipe(data(function() {
+        return require('./src/data/data.json')
+    }))
     .pipe(handlebars({}, options))
     .pipe(rename(function (path) {
       path.extname = ".html"
@@ -57,13 +61,13 @@ gulp.task('scss', function() {
             errorHandler: notify.onError("Error: <%= error.message %>")
         }))
         .pipe(gulpif(isDebug, sourcemaps.init()))
-        .pipe(autoprefixer())
         .pipe(sass({
             includePaths: [
                 __dirname + "/bower_components",
                 __dirname + "/node_modules"
             ]
         }).on('error', sass.logError))
+        .pipe(autoprefixer())
         .pipe(gulpif(isDebug, sourcemaps.write()))
         .pipe(gulp.dest(paths.dest + '/css'))
         .pipe(browserSync.stream());
@@ -75,7 +79,6 @@ gulp.task('less', function() {
             errorHandler: notify.onError("Error: <%= error.message %>")
         }))
         .pipe(gulpif(isDebug, sourcemaps.init()))
-        .pipe(autoprefixer())
         .pipe(less({
             paths: [
                 path.join(__dirname, 'less', 'includes'),
@@ -83,6 +86,7 @@ gulp.task('less', function() {
                 __dirname + "/node_modules"
             ]
         }))
+        .pipe(autoprefixer())
         .pipe(gulpif(isDebug, sourcemaps.write()))
         .pipe(gulp.dest(paths.dest + '/css'))
         .pipe(browserSync.stream());
@@ -127,7 +131,7 @@ gulp.task('clean', function() {
 });
 
 gulp.task('watch', function() {
-    watch(paths.src + '/**/*.html', function() {
+    watch([paths.src + '/**/*.html', './src/data/data.json'], function() {
         gulp.start('html');
     });
     watch(paths.src + paths.scss + '/**/*.scss', function() {
@@ -147,7 +151,7 @@ gulp.task('watch', function() {
     });
 });
 
-gulp.task('dev-oleg', ['scss', 'less', 'html', 'js', 'js:vendor', 'images'], function() {
+gulp.task('dev', ['scss', 'less', 'html', 'js', 'js:vendor', 'images'], function() {
     browserSync.init({
         server: paths.dest
     });
